@@ -36,8 +36,8 @@ for(pollute_id in seq_along(pollute_map)){
   
 }
 
-final_data <- Reduce(merge, pollute_list)
+final_data <- Reduce(\(x, y) merge(x, y, all = TRUE), pollute_list)
 
-final_data$date <- as.Date(as.POSIXct(final_data$date, origin="1970-01-01"))
+final_data$date <- as.Date(as.POSIXct(final_data$date/1000, origin="1970-01-01"))
 
-write.csv(final_data, "raw_data/annecy_airquality.csv")
+write.csv(final_data, "raw_data/annecy_airquality.csv", row.names = FALSE)
