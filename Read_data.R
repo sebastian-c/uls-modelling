@@ -75,12 +75,4 @@ for(pollute_index in seq_len(nrow(pollute_map))){
 
 final_data <- Reduce(allMerge, pollute_list)
 
-# convert millisecond timestamp to date
-final_data$date <- as.Date(as.POSIXct(final_data$date/1000, origin="1970-01-01"))
-
-final_data %>%
-  pivot_wider(id_cols = date:station, names_from = pollutant_name, values_from = pollutant_level) ->
-  wide_data
-
-
-write.csv(wide_data, "raw_data/annecy_airquality.csv", row.names = FALSE)
+write.csv(final_data, "raw_data/annecy_airquality.csv", row.names = FALSE)
