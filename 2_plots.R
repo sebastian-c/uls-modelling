@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 
 air_data <- read.csv("data/annecy_airquality.csv")
 
