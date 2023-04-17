@@ -1,3 +1,3 @@
 # UniLaSalle modelling project
 
-Haven't yet chosen data but a description of the data will be placed here
+This projet is a timeseries analysis of air pollution data in Auvergne-Rhône-Alpes.
