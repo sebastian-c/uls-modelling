@@ -1,0 +1,93 @@
+---
+title: "Data cleaning and linear regression"
+format: 
+  html:
+    self-contained: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(data.table)
+library(ellipse)
+library(RColorBrewer)
+library(knitr)
+
+opts_chunk$set(echo = FALSE)
+options(knitr.kable.NA = '')
+
+``` 
+
+
+# Notes for previous sections
+
+- 
+
+# Data processing
+
+The data was obtained from the ATMO Auvergne Rhône-Alpes website (https://www.atmo-auvergnerhonealpes.fr/). We chose two towns: Lyon and Annecy. Lyon is the capital of the region and we thought it would have a distinct profile from Annecy, which is much smaller and nestled in the mountains. 
+
+While the Atmo website does have an API, it’s not designed to be used directly – it only serves to feed an interactive data visualization on their webpage. This doesn’t pose too much of a problem as it’s possible to use Google Chrome’s Developer tools to isolate the REST calls and backwards-engineer the API. 
+
+The API has another quirk that makes it a bit tricky to use. The granularity of the data is dependent on the length of the timeseries requested. This is 
+
+
+
+# Linear regression
+
+Beyond autocorrelative trends, there exist also more "classical" relationships between variables. As a second part to this report, we will examine the relationships between air quality variables.
+
+```{r readin}
+raw_airquality <- fread("data/annecy_airquality.csv")
+airquality_vars <- raw_airquality[,c("PM10", "dioxyde_azote", "monoxyde_azote")]
+```
+
+
+## Correlation
+
+As is standard, we'll start with correlations between our variables:
+
+
+```{r correlation}
+#cor_colours <- brewer.pal(5, "Spectral")
+#cor_colours <- colorRampPalette(cor_colours)(100)
+
+quality_cor <- cor(airquality_vars)
+quality_cor[upper.tri(quality_cor)] <- NA
+kable(round(quality_cor, 2), format="html")
+
+plotcorr(quality_cor, col="cornflowerblue")
+```
+
+The above graph shows ellipses which correspond to the strength of correlation (Pearson). We can see that nitrogen dioxide (NO~2~) and nitrogen monoxide(NO) are highly correlated (0.83), which shouldn't be surprising as they are both grouped under the NO~x~ category. Particulates also increase with NO (0.61) and NO~2~ (0.73) which makes sense as they're all connected to pollution, but the correlation is much weaker.
+
+However, as Anscombe's quartet shows, correlation is not sufficient to characterise relationships between variables. One needs to use plots.
+
+```{r corrplots}
+plot(airquality_vars)
+```
+One thing we can see is that the NO seems to have a disproportionate number of low values - this can indicate a non-linear relationship. A log transform will bring the higher and lower values closer together.
+
+```{r log_corrplots}
+airquality_vars[,log_NO := log10(monoxyde_azote)]
+#airquality_vars[,sq_NO := monoxyde_azote^2]
+plot(airquality_vars[, c("PM10", "dioxyde_azote", "log_NO")])
+
+```
+```{r linear_models}
+
+basic_model <- lm(PM10 ~ dioxyde_azote + monoxyde_azote + city, data = raw_airquality)
+par(mfrow = c(2,2))
+plot(basic_model)
+par(mfrow = c(1,1))
+
+```
+
+# Why bother with linear regression?
+
+- Clearly there's an autocorrelation component
+- Useful for sensors which may not have access to historical data
+- Can be used in situations where historical values aren't relevant such as measuring contaminants after an environmental accident
+
+```{r purl, include=FALSE}
+#purl("regression_report.qmd", "4_linear_models.R")
+```
