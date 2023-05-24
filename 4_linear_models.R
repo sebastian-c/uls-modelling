@@ -19,7 +19,6 @@ options(knitr.kable.NA = '')
 
 
 #' 
-#' 
 #' # Data processing
 #' 
 #' The data was obtained from the ATMO Auvergne Rhône-Alpes website (https://www.atmo-auvergnerhonealpes.fr/). We chose two towns: Lyon and Annecy. Lyon is the capital of the region and we thought it would have a distinct profile from Annecy, which is much smaller and nestled in the mountains. We took all the data that was available for the whole period:
@@ -28,8 +27,7 @@ options(knitr.kable.NA = '')
 #' - monoxyde_azote: Nitrogen monoxide (NO, µg/m^2)
 #' - dioxyde_azote: Nitrogen dioxide (NO~2~, µg/m^2)
 #' 
-#' 
-#' While the ATMO website does have an API, it’s not designed to be used directly – it only serves to feed an interactive data visualization on their webpage. This doesn’t pose too much of a problem as it’s possible to use Google Chrome’s Developer tools to isolate the REST calls and backwards-engineer the API. 
+#' While the ATMO website does have an API, it's not designed to be used directly – it only serves to feed an interactive data visualization on their webpage. This doesn't pose too much of a problem as it's possible to use Google Chrome's Developer tools to isolate the REST calls and backwards-engineer the API. 
 #' 
 #' The API has another quirk that makes it a bit tricky to use. The granularity of the data is dependent on the length of the timeseries requested. For example, hourly data is given for a timeseries length of < 7 days but annual data is given if the timer series is > 3 years. To get around this, we pulled data 1 year at a time allowing us to get monthly data. We then aggregated this to be monthly. 
 #' 
@@ -40,12 +38,7 @@ options(knitr.kable.NA = '')
 #' 
 #' ## Necessity of simple linear regression
 #' 
-#' 
-#' - Clearly there's an autocorrelation component
-#' - Useful for sensors which may not have access to historical data
-#' - Can be used in situations where historical values aren't relevant such as measuring contaminants after an environmental accident
-#' - Easy to interpret
-#' 
+#' While there's clearly an autocorrelation component, there are still uses in this dataset for classical regression. It's useful for sensors which may not have access to historical data and for situations where historical values aren't relevant such as measuring contaminants after an environmental accident. It's also very easy to interpret with a clear link between the predictors and the response.
 #' 
 #' We would like to predict particulates (PM10) based on nitrogen monoxide (`monoxyde_azote`, NO) and nitrogen dioxide (`dioxyde_azote`, NO~2~) levels
 #' 
@@ -162,5 +155,5 @@ ggplot(raw_airquality, aes(x = dioxyde_azote, y = PM10)) +
 #' 
 #' 
 
-#purl("regression_report.qmd", "4_linear_models.R")
+#purl("regression_report.qmd", "4_linear_models.R", documentation = 2)
 
